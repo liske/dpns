@@ -1,0 +1,10 @@
+#!/bin/bash
+
+DPNS_COMPOSES=()
+. ${0%run}load
+
+if [ "${#DPNS_COMPOSES[*]}" = "0" ]; then
+  echo "Empty compose list."
+  exit 0
+fi
+

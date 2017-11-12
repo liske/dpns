@@ -1,0 +1,28 @@
+#!/bin/bash
+
+DPNS_PNAME=/var/run/docker.sock
+DPNS_PWAIT=100
+DPNS_IMAGES=()
+DPNS_DUMPDIR=/srv/docker/images
+DPNS_CONFIG="${DPNS_CONFIG:-/etc/dpns/dpns.conf}"
+. "${DPNS_CONFIG}"
+
+if [ "${#DPNS_IMAGES[*]}" = "0" ]; then
+  echo "Empty image list."
+  exit 0
+fi
+
+if [ ! -e "$DPNS_PNAME" ]; then
+  echo "Waiting for $DPNS_PNAME..."
+  while [ "$DPNS_PWAIT" -gt 0 -a ! -e "$DPNS_PNAME" ]; do
+          DPNS_PWAIT=$((DPNS_PWAIT - 1))
+          sleep .1
+  done
+  echo
+fi
+
+for image in ${DPNS_IMAGES[*]}; do
+  img="$(echo $image | sha1sum | cut -f1 -d' ').tar"
+  docker load -i "$DPNS_DUMPDIR/$img"
+  echo
+done

@@ -1,0 +1,48 @@
+#!/bin/bash
+
+set -e
+
+DPNS_IMAGES=()
+DPNS_DUMPDIR=/srv/docker/images
+DPNS_PRUNE=1
+DPNS_CONFIG="${DPNS_CONFIG:-/etc/dpns/dpns.conf}"
+. "${DPNS_CONFIG}"
+
+if [ "${#DPNS_IMAGES[*]}" = "0" ]; then
+  echo "Empty image list."
+  exit 0
+fi
+
+set +e
+
+images=()
+for image in ${DPNS_IMAGES[*]}; do
+  echo "Updating $image..."
+  docker pull "$image"
+  img="$(echo $image | sha1sum | cut -f1 -d' ').tar"
+  images+=($img)
+  docker save -o "$DPNS_DUMPDIR/$img" "$image" && echo "Saved: $img"
+  echo
+done
+
+if [ "$DPNS_PRUNE" != "1" ]; then
+  exit 0
+fi
+
+set -e
+
+echo "Checking for obsolete image dumps..."
+cd "$DPNS_DUMPDIR"
+for oimg in *.tar; do
+  obsolete=1
+  for nimg in ${images[*]}; do
+    if [ "$oimg" = "$nimg" ]; then
+      obsolete=0
+    fi
+  done
+  if [ "$obsolete" = "1" ]; then
+    rm -f "$oimg"
+    echo "Purged: $oimg"
+  fi
+done
+echo
