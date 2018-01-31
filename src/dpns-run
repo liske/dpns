@@ -8,3 +8,10 @@ if [ "${#DPNS_COMPOSES[*]}" = "0" ]; then
   exit 0
 fi
 
+for cf in $DPNS_COMPOSES; do
+    if [ -e "$cf/docker-compose.yml" ]; then
+	cf="$cf/docker-compose.yml"
+    fi
+
+    docker-compose up -d -f "$cf"
+done
