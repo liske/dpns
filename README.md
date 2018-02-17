@@ -13,16 +13,16 @@ The following commands are provided:
 - **dpns-save** - pulls docker image versions and dumps them to disk
 
 
-## Install
+## Install on Alpine Linux
 
-There is a prebuild APK archive for *Alpine Linux*:
+There is a prebuild APK archive:
 
 ```
-~ # wget https://github.com/liske/dpns/releases/download/0.2/dpns-0.2-r0.apk
+~ # wget https://github.com/liske/dpns/releases/download/0.3/dpns-0.3-r0.apk
 Connecting to github.com (192.30.253.112:443)
 Connecting to github-production-release-asset-2e65be.s3.amazonaws.com (52.216.66.40:443)
-dpns-0.2-r0.apk      100% |*******************************|  3778   0:00:00 ETA
-~ # apk add --allow-untrusted dpns-0.2-r0.apk
+dpns-0.3-r0.apk      100% |*******************************|  3778   0:00:00 ETA
+~ # apk add --allow-untrusted dpns-0.3-r0.apk
 (1/16) Installing pkgconf (1.3.10-r0)
 (2/16) Installing ncurses-terminfo-base (6.0_p20171125-r0)
 (3/16) Installing ncurses-terminfo (6.0_p20171125-r0)
@@ -40,7 +40,7 @@ Executing bash-4.4.12-r2.post-install
 (14/16) Installing libseccomp (2.3.2-r0)
 (15/16) Installing docker (17.10.0-r0)
 Executing docker-17.10.0-r0.pre-install
-(16/16) Installing dpns (0.2-r0)
+(16/16) Installing dpns (0.3-r0)
 Executing busybox-1.27.2-r7.trigger
 Executing ca-certificates-20171114-r0.trigger
 OK: 115 MiB in 27 packages
@@ -58,6 +58,6 @@ Use `rc-update` to enable dpns to load docker images and run stacks on startup:
 
 The configuration files are located within of the `/etc/dpns` directory:
 
-- **dpns.conf** - basic configuration
-- **images.conf** - list of docker images
+- **dpns.conf** - base configuration
+- **images.conf** - list of docker images to save and load
 - **composes.conf** - list of docker compose files/directories started by `dpns-run`
