@@ -28,16 +28,33 @@ set -e
 
 DPNS_IMAGES=()
 DPNS_DUMPDIR=/srv/docker/images
+DPNS_REMOUNT=1
 DPNS_PRUNE=1
 DPNS_CONFIG="${DPNS_CONFIG:-/etc/dpns/dpns.conf}"
 . "${DPNS_CONFIG}"
 
 if [ "${#DPNS_IMAGES[*]}" = "0" ]; then
-  echo "Empty image list."
+  echo "Empty image list, nothing to do!"
   exit 0
 fi
 
 set +e
+
+if [ "$DPNS_REMOUNT" == "1" ]; then
+  if findmnt -n --raw --output=options -fT "$DPNS_DUMPDIR" | egrep -q '(^|\W)ro(\W|$)'; then
+    target=$(findmnt -n --raw --output=target -fT "$DPNS_DUMPDIR")
+
+    function remnt {
+      echo "Remounting $target read-only..."
+      mount "$target" -o remount,ro || true
+    }
+    trap remnt exit
+
+    echo "Remounting $target read-write..."
+    mount "$target" -o remount,rw
+    echo
+  fi
+fi
 
 images=()
 for image in ${DPNS_IMAGES[*]}; do
@@ -66,7 +83,6 @@ for oimg in *.tar; do
   done
   if [ "$obsolete" = "1" ]; then
     rm -f "$oimg"
-    echo "Purged: $oimg"
+    echo " Purged: $oimg"
   fi
 done
-echo
