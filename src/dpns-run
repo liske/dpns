@@ -34,10 +34,10 @@ fi
 
 for dn in ${DPNS_COMPOSES[*]}; do
     if [ -d "$dn" ]; then
-        cd "$dn" && docker-compose up -d
+        cd "$dn" && docker compose up -d
     else
         cf=$(basename $dn)
         dn=$(dirname $dn)
-        cd "$dn" && docker-compose -f "$cf" up -d
+        cd "$dn" && docker compose -f "$cf" up -d
     fi
 done
